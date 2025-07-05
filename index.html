@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Caesar Cipher App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #1e1e2f;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+    h1 {
+      margin-bottom: 1rem;
+    }
+    textarea, input, select, button {
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      width: 300px;
+    }
+    #result {
+      margin-top: 1rem;
+      font-weight: bold;
+      color: #00e676;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔐 Caesar Cipher Web App</h1>
+
+  <textarea id="message" rows="4" placeholder="Enter your message..."></textarea><br>
+  <input type="number" id="shift" placeholder="Enter shift value (e.g. 3)" /><br>
+
+  <select id="mode">
+    <option value="encrypt">Encrypt</option>
+    <option value="decrypt">Decrypt</option>
+  </select><br>
+
+  <button onclick="processMessage()">Submit</button>
+
+  <div id="result"></div>
+
+  <script>
+    function caesarCipher(text, shift, mode) {
+      let result = "";
+
+      for (let i = 0; i < text.length; i++) {
+        let char = text[i];
+        if (char.match(/[a-z]/i)) {
+          const code = text.charCodeAt(i);
+          const isUpper = code >= 65 && code <= 90;
+          const base = isUpper ? 65 : 97;
+          const shiftAmount = mode === "encrypt" ? shift : -shift;
+          const newChar = String.fromCharCode(((code - base + shiftAmount + 26) % 26) + base);
+          result += newChar;
+        } else {
+          result += char;
+        }
+      }
+
+      return result;
+    }
+
+    function processMessage() {
+      const message = document.getElementById("message").value;
+      const shift = parseInt(document.getElementById("shift").value);
+      const mode = document.getElementById("mode").value;
+
+      if (!message || isNaN(shift)) {
+        document.getElementById("result").textContent = "⚠️ Please enter a valid message and shift value.";
+        return;
+      }
+
+      const output = caesarCipher(message, shift, mode);
+      document.getElementById("result").textContent = `${mode.toUpperCase()}ED: ${output}`;
+    }
+  </script>
+</body>
+</html>

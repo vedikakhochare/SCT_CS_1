@@ -1,9 +1,11 @@
 # SCT_CS_1
 # Cyber Security Internship Task 01 at SkillCraft Technology.
+
 Creating a program that can encrypt and decrypt text using the Caeser Cipher algorithm. Allow users to input a message and a shift value to perform encryption and decryption
 
 
-🔐 What Does a Caesar Cipher Do?
+# What Does a Caesar Cipher Do?
+
 The Caesar Cipher is one of the simplest and oldest encryption techniques. It works like this:
 
 Each letter in the message is shifted by a fixed number of positions down or up the alphabet.

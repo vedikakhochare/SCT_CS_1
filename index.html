@@ -6,22 +6,76 @@
   <title>Caesar Cipher App</title>
   <style>
     body {
+      margin: 0;
+      padding: 0;
       font-family: Arial, sans-serif;
-      background: #1e1e2f;
-      color: #fff;
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 100vw;
+      background: url('https://www.in2code.de/fileadmin/_processed_/0/b/csm_code_javascript_49d002a67e.webp') no-repeat center center/cover;
+      filter: blur(8px);
+      z-index: -2;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 100vw;
+      background-color: rgba(0, 0, 0, 0.6); /* dark overlay */
+      z-index: -1;
+    }
+
+    .content {
       display: flex;
       flex-direction: column;
+      justify-content: center;
       align-items: center;
-      padding: 2rem;
+      height: 100vh;
     }
+
+    .box {
+      background-color: rgba(0, 0, 0, 0.8);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+      width: 320px;
+      text-align: center;
+      color: white;
+    }
+
     h1 {
       margin-bottom: 1rem;
     }
-    textarea, input, select, button {
+
+    textarea,
+    input,
+    select,
+    button {
       margin: 0.5rem 0;
       padding: 0.5rem;
-      width: 300px;
+      width: 100%;
+      border: none;
+      border-radius: 6px;
     }
+
+    button {
+      background-color: #00e676;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
     #result {
       margin-top: 1rem;
       font-weight: bold;
@@ -30,24 +84,27 @@
   </style>
 </head>
 <body>
-  <h1>🔐 Caesar Cipher Web App</h1>
+  <div class="content">
+    <div class="box">
+      <h1>🔐 Caesar Cipher</h1>
 
-  <textarea id="message" rows="4" placeholder="Enter your message..."></textarea><br>
-  <input type="number" id="shift" placeholder="Enter shift value (e.g. 3)" /><br>
+      <textarea id="message" rows="4" placeholder="Enter your message..."></textarea><br>
+      <input type="number" id="shift" placeholder="Enter shift value (e.g. 3)" /><br>
 
-  <select id="mode">
-    <option value="encrypt">Encrypt</option>
-    <option value="decrypt">Decrypt</option>
-  </select><br>
+      <select id="mode">
+        <option value="encrypt">Encrypt</option>
+        <option value="decrypt">Decrypt</option>
+      </select><br>
 
-  <button onclick="processMessage()">Submit</button>
+      <button onclick="processMessage()">Submit</button>
 
-  <div id="result"></div>
+      <div id="result"></div>
+    </div>
+  </div>
 
   <script>
     function caesarCipher(text, shift, mode) {
       let result = "";
-
       for (let i = 0; i < text.length; i++) {
         let char = text[i];
         if (char.match(/[a-z]/i)) {
@@ -61,7 +118,6 @@
           result += char;
         }
       }
-
       return result;
     }
 

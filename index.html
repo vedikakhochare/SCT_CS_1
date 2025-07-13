@@ -9,8 +9,7 @@
       margin: 0;
       padding: 0;
       font-family: Arial, sans-serif;
-      overflow: hidden;
-      height: 100vh;
+      overflow: auto;
     }
 
     body::before {
@@ -18,8 +17,8 @@
       position: fixed;
       top: 0;
       left: 0;
-      height: 100vh;
-      width: 100vw;
+      height: 100%;
+      width: 100%;
       background: url('https://www.in2code.de/fileadmin/_processed_/0/b/csm_code_javascript_49d002a67e.webp') no-repeat center center/cover;
       filter: blur(8px);
       z-index: -2;
@@ -30,26 +29,28 @@
       position: fixed;
       top: 0;
       left: 0;
-      height: 100vh;
-      width: 100vw;
-      background-color: rgba(0, 0, 0, 0.6); /* dark overlay */
+      height: 100%;
+      width: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
       z-index: -1;
     }
 
     .content {
       display: flex;
-      flex-direction: column;
       justify-content: center;
-      align-items: center;
-      height: 100vh;
+      align-items: flex-start;
+      padding: 3rem 1rem;
+      min-height: 100vh;
+      box-sizing: border-box;
     }
 
     .box {
-      background-color: rgba(0, 0, 0, 0.8);
+      background-color: rgba(0, 0, 0, 0.85);
       padding: 2rem;
       border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
-      width: 320px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.9);
+      width: 100%;
+      max-width: 400px;
       text-align: center;
       color: white;
     }
@@ -57,6 +58,15 @@
     h1 {
       margin-bottom: 1rem;
       color: lightskyblue;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      text-align: left;
+      margin-top: 0.75rem;
+      margin-bottom: 0.25rem;
+      color: #ccc;
     }
 
     textarea,
@@ -68,6 +78,8 @@
       width: 100%;
       border: none;
       border-radius: 6px;
+      font-size: 1rem;
+      box-sizing: border-box;
     }
 
     button {
@@ -75,6 +87,19 @@
       color: #000;
       font-weight: bold;
       cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #00c853;
+    }
+
+    button:focus,
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: 2px solid #00e676;
+      outline-offset: 2px;
     }
 
     #result {
@@ -82,24 +107,56 @@
       font-weight: bold;
       color: #00e676;
     }
+
+    .skip-link {
+      position: absolute;
+      left: -999px;
+      top: auto;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+    }
+
+    .skip-link:focus {
+      position: static;
+      width: auto;
+      height: auto;
+      background: #000;
+      color: #fff;
+      padding: 0.5rem;
+      z-index: 1000;
+    }
   </style>
 </head>
 <body>
-  <div class="content">
-    <div class="box">
-      <h1> Caesar Cipher</h1>
+  <a href="#mainContent" class="skip-link">Skip to main content</a>
 
-      <textarea id="message" rows="4" placeholder="Enter your message..."></textarea><br>
-      <input type="number" id="shift" placeholder="Enter shift value (e.g. 3)" /><br>
+  <div class="content" id="mainContent">
+    <div class="box" role="form" aria-labelledby="cipherHeading">
+      <h1 id="cipherHeading">Caesar Cipher</h1>
 
+      <label for="message">Message:</label>
+      <textarea id="message" rows="4" placeholder="Enter your message..."></textarea>
+
+      <label for="shift">Shift Value:</label>
+      <input type="number" id="shift" placeholder="Enter shift value (e.g. 3)" />
+
+      <label for="mode">Mode:</label>
       <select id="mode">
         <option value="encrypt">Encrypt</option>
         <option value="decrypt">Decrypt</option>
-      </select><br>
+      </select>
 
       <button onclick="processMessage()">Submit</button>
 
-      <div id="result"></div>
+      <!-- Result appears here -->
+      <div id="result" role="status" aria-live="polite"></div>
+
+      <!-- File section moved to bottom -->
+      <label for="fileInput">Or Upload a .txt File:</label>
+      <input type="file" id="fileInput" accept=".txt" />
+      <button onclick="encryptFromFile()">Encrypt File</button>
+      <button onclick="downloadEncryptedText()">Download Encrypted Text</button>
     </div>
   </div>
 
@@ -133,7 +190,50 @@
       }
 
       const output = caesarCipher(message, shift, mode);
+      lastEncryptedText = output;
       document.getElementById("result").textContent = `${mode.toUpperCase()}ED: ${output}`;
+    }
+
+    let lastEncryptedText = "";
+
+    function encryptFromFile() {
+      const fileInput = document.getElementById("fileInput");
+      const shift = parseInt(document.getElementById("shift").value);
+      const mode = document.getElementById("mode").value;
+
+      if (!fileInput.files[0]) {
+        alert("Please select a file first.");
+        return;
+      }
+
+      if (isNaN(shift)) {
+        alert("Please enter a valid shift value.");
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = function (event) {
+        const fileContent = event.target.result;
+        const encryptedText = caesarCipher(fileContent, shift, mode);
+        lastEncryptedText = encryptedText;
+        document.getElementById("result").textContent = `${mode.toUpperCase()}ED: ${encryptedText}`;
+      };
+
+      reader.readAsText(fileInput.files[0]);
+    }
+
+    function downloadEncryptedText() {
+      if (!lastEncryptedText) {
+        alert("No encrypted text to download.");
+        return;
+      }
+
+      const blob = new Blob([lastEncryptedText], { type: "text/plain" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "encrypted_output.txt";
+      link.click();
     }
   </script>
 </body>
